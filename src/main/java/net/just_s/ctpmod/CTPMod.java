@@ -9,10 +9,11 @@ import net.just_s.ctpmod.config.Point;
 import net.just_s.ctpmod.util.CommandManager;
 import net.just_s.ctpmod.util.ReconnectThread;
 import net.minecraft.client.gui.screen.*;
+import net.minecraft.client.gui.screen.multiplayer.ConnectScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
+import net.minecraft.client.network.CookieStorage;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.network.ServerAddress;
-import net.minecraft.network.ClientConnection;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,7 +71,7 @@ public class CTPMod implements ClientModInitializer {
 	}
 
 	public void connectToServer(ServerInfo targetInfo) {
-		ConnectScreen.connect(new MultiplayerScreen(new TitleScreen()), MC, ServerAddress.parse(targetInfo.address), targetInfo);
+		ConnectScreen.connect(new MultiplayerScreen(new TitleScreen()), MC, ServerAddress.parse(targetInfo.address), targetInfo, false, (CookieStorage)null);
 	}
 
 	public static Text generateFeedback(String message, Object... args) {
