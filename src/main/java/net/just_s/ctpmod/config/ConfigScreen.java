@@ -14,14 +14,13 @@ public class ConfigScreen {
     public static ConfigEntryBuilder entryBuilder;
 
     public static Screen buildScreen (Screen currentScreen) {
+        // CTPMod.points = pass;
+        // Сохранить CTP.points в json
         ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen(currentScreen)
                 .setTitle(Text.of("Point Menu"))
                 .setTransparentBackground(true)
-                .setSavingRunnable(() -> {
-                    // CTPMod.points = pass;
-                    CTPMod.config.save(); // Сохранить CTP.points в json
-                });
+                .setSavingRunnable(CTPMod.config::save);
 
         // mainCategory - Это экран
         mainCategory = builder.getOrCreateCategory(Text.of("Null"));
@@ -38,9 +37,8 @@ public class ConfigScreen {
         }
         // Это потом позволит делать кейбинды
         // mainCategory.addEntry(entryBuilder.startModifierKeyCodeField().build());
-        Screen screen = builder.build();
 
-        return screen;
+        return builder.build();
     }
 
     public static void createOption(int PointIndex) {

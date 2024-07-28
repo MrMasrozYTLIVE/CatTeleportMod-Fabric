@@ -17,9 +17,7 @@ public class ListCommand {
     }
 
     private static int run(CommandContext<FabricClientCommandSource> ctx) {
-        String[] pointRepr = new String[CTPMod.points.length];
-        for (int i = 0; i < CTPMod.points.length; i++) {pointRepr[i] = CTPMod.points[i].toString();}
-        String message = "list of loaded Points:\n" + String.join("\n", pointRepr);
+        String message = "list of loaded Points:\n" + String.join("\n", CTPMod.points.keySet());
         ctx.getSource().sendFeedback(CTPMod.generateFeedback(
                 message
         ));

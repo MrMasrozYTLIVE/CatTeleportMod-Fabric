@@ -28,17 +28,17 @@ public class ReconnectThread extends Thread {
     @Override
     public void run() {
         try {
-            int[] s = {secondsToReconnect - CTPMod.delta, 0};
-            CTPMod.LOGGER.info("reconnect in " + Collections.max(Arrays.asList(ArrayUtils.toObject(s))) + " sec");
+            int seconds = secondsToReconnect - CTPMod.delta;
+            CTPMod.LOGGER.info("reconnect in {} sec", Math.max(seconds, 0));
 
-            Thread.sleep((Collections.max(Arrays.asList(ArrayUtils.toObject(s)))) * 1000L);
+            Thread.sleep(Math.max(seconds, 0) * 1000L);
             synchronized (this) {
                 CTPMod.LOGGER.info("Reconnecting to server.");
                 MinecraftClient.getInstance().execute(CTPMod.INSTANCE::finishReconnect);
             }
             return;
         } catch (/*IOException* |*/ InterruptedException e) {
-            CTPMod.LOGGER.error("Reconnection failed. Reason: " + e);
+            CTPMod.LOGGER.error("Reconnection failed. Reason:", e);
         }
         MinecraftClient.getInstance().execute(CTPMod.INSTANCE::cancelReconnect);
     }

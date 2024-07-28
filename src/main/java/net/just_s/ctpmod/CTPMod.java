@@ -20,7 +20,11 @@ import org.apache.logging.log4j.Logger;
 
 import net.minecraft.client.MinecraftClient;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Environment(EnvType.CLIENT)
 public class CTPMod implements ClientModInitializer {
@@ -28,7 +32,7 @@ public class CTPMod implements ClientModInitializer {
 	public static final String MOD_CMD = "ctp";
 	public static final MinecraftClient MC = MinecraftClient.getInstance();
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
-	public static Point[] points = new Point[0];
+	public static ConcurrentMap<String, Point> points = new ConcurrentHashMap<>();
 	public static int delta = 0;
 	public static final ConfigParser config = ConfigParser.INSTANCE;
 	public static ServerInfo currentServer = null;
@@ -64,8 +68,7 @@ public class CTPMod implements ClientModInitializer {
 	public void cancelReconnect() {
 		try {
 			reconnectThread.join();
-		} catch (InterruptedException | NullPointerException ignored) {
-		}
+		} catch (InterruptedException | NullPointerException ignored) {}
 		LOGGER.info("Reconnecting cancelled.");
 		MC.setScreen(new DisconnectedScreen(new MultiplayerScreen(new TitleScreen()), Text.of("§8[§6CatTeleport§8]"), Text.of("cancelReconnect")));
 	}

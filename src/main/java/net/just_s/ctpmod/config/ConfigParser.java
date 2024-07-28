@@ -26,39 +26,16 @@ public class ConfigParser {
     }
 
     public boolean deletePoint(String pointName) {
-        //Удаление из json файла
-        boolean isPointHere = false;
-        int pointIndex = 0;
-        Point[] pointsArr = CTPMod.points;
-        for (int i = 0; i < pointsArr.length; i++) {
-            if (Objects.equals(pointsArr[i].getName(), pointName)) {
-                isPointHere = true;
-                pointIndex = i;
-                break;
-            }
-        }
-        if (!isPointHere) {return false;}
+        Point point = CTPMod.points.remove(pointName);
+        if(point == null) return false;
 
-        Point[] newPointsArr = new Point[pointsArr.length - 1];
-
-        for (int i = 0, j = 0; i < pointsArr.length; i++) {
-            if (i == pointIndex) {
-                continue;
-            }
-            newPointsArr[j++] = pointsArr[i];
-        }
-        CTPMod.points = newPointsArr;
         save();
         return true;
     }
 
     public void addPoint(Point point) {
         //if (CTPMod.points == null) {CTPMod.points = new Point[]{};}
-        Point[] pointsArr = CTPMod.points;
-        Point[] newPointsArr = new Point[pointsArr.length + 1];
-        for (int i = 0; i < pointsArr.length; i++) {newPointsArr[i] = pointsArr[i];}
-        newPointsArr[pointsArr.length] = point;
-        CTPMod.points = newPointsArr;
+        CTPMod.points.put(point.getName(), point);
         save();
     }
 
@@ -67,10 +44,14 @@ public class ConfigParser {
         if (file.exists()) {
             try {
                 String json_string = Files.readString(Path.of(file.toString()), StandardCharsets.US_ASCII);
-                CTPMod.delta = deltaFromJson(json_string);
-                CTPMod.points = pointsFromJson(json_string);
+                JsonObject json = JsonParser.parseString(json_string).getAsJsonObject();
+
+                CTPMod.delta = json.getAsJsonPrimitive("delta").getAsInt();
+                for(Point point : GSON.fromJson(json.getAsJsonArray("points").toString(), Point[].class)) {
+                    CTPMod.points.put(point.getName(), point);
+                }
             } catch (Exception e) {
-                CTPMod.LOGGER.error("Could not load config from file '" + file.getAbsolutePath() + "'", e);
+                CTPMod.LOGGER.error("Could not load config from file '{}'", file.getAbsolutePath(), e);
             }
         }
         save();
@@ -81,33 +62,15 @@ public class ConfigParser {
         try (FileWriter writer = new FileWriter(file)) {
             writer.write(toJson());
         } catch (Exception e) {
-            CTPMod.LOGGER.error("Could not save config to file '" + file.getAbsolutePath() + "'", e);
+            CTPMod.LOGGER.error("Could not save config to file '{}'", file.getAbsolutePath(), e);
         }
     }
-
-    protected int deltaFromJson(String json_string) {
-        //CTPMod.LOGGER.error("fromJson: " + json_string );
-        JsonParser jsparser = new JsonParser();
-        JsonObject object = jsparser.parse(json_string).getAsJsonObject();
-        return object.getAsJsonPrimitive("delta").getAsInt();
-    }
-
-    protected Point[] pointsFromJson(String json_string) {
-        //CTPMod.LOGGER.error("fromJson: " + json_string );
-        JsonParser jsparser = new JsonParser();
-        JsonObject object = jsparser.parse(json_string).getAsJsonObject();
-        String newJSONString = object.getAsJsonArray("points").toString();
-        return GSON.fromJson(newJSONString, Point[].class);
-    }
-
 
     protected String toJson(){
-        //CTPMod.LOGGER.error(Arrays.toString(CTPMod.points));
-        Point[] points = CTPMod.points;
-        String[] jsonReprOfPoints = new String[points.length];
-        for(int i = 0; i < points.length; i++) {
-            jsonReprOfPoints[i] = points[i].toJson();
+        StringBuilder json = new StringBuilder();
+        for(Point point : CTPMod.points.values()) {
+            json.append(point.toJson());
         }
-        return "{\"delta\":" + CTPMod.delta + ", \"points\":[" + String.join(",", jsonReprOfPoints)+ "]}";
+        return "{\"delta\":" + CTPMod.delta + ", \"points\":[" + json + "]}";
     }
 }

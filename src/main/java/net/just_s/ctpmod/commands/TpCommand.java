@@ -29,8 +29,8 @@ public class TpCommand {
     }
 
     private static CompletableFuture<Suggestions> suggest(CommandContext<FabricClientCommandSource> ctx, SuggestionsBuilder builder) {
-        for (Point point : CTPMod.points) {
-            builder.suggest(point.getName());
+        for (String pointName : CTPMod.points.keySet()) {
+            builder.suggest(pointName);
         }
         return builder.buildFuture();
     }
@@ -42,24 +42,18 @@ public class TpCommand {
             ));
             return 1;
         }
-        String waypointName = ctx.getArgument("name", String.class);
-        Point curPoint = null;
-        for (Point point : CTPMod.points) {
-            if (Objects.equals(point.getName(), waypointName)) {
-                curPoint = point;
-                break;
-            }
-        }
-        if (curPoint == null) {
+        String pointName = ctx.getArgument("name", String.class);
+        Point point = CTPMod.points.get(pointName);
+        if (point == null) {
             ctx.getSource().sendFeedback(CTPMod.generateFeedback(
                     "§cThere is no §fPoint §cwith name \"§f{0}§c\".",
-                    waypointName
+                    pointName
             ));
             return 0;
         }
 
         //if everything is okay, only then start reconnect cycle:
-        CTPMod.startReconnect(curPoint);
+        CTPMod.startReconnect(point);
         return 1;
     }
 }
