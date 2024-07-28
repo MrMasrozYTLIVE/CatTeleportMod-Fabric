@@ -32,33 +32,31 @@ public class ConfigScreen {
                         .setTooltip(Text.of("Amount of seconds between server and client (can be negative)"))
                         .setSaveConsumer(newValue -> CTPMod.delta = newValue)
                 .build());
-        for(int i=0; i < CTPMod.points.length; i++) {
-            createOption(i);
-        }
+        CTPMod.points.forEach(ConfigScreen::createOption);
         // Это потом позволит делать кейбинды
         // mainCategory.addEntry(entryBuilder.startModifierKeyCodeField().build());
 
         return builder.build();
     }
 
-    public static void createOption(int PointIndex) {
+    public static void createOption(String pointName, Point point) {
         List<AbstractConfigListEntry> listOfEntries = new ArrayList<>();
-        listOfEntries.add(entryBuilder.startStrField(Text.of("Point Name"), CTPMod.points[PointIndex].getName())
-                .setDefaultValue(CTPMod.points[PointIndex].getName()) // Recommended: Used when user click "Reset"
+        listOfEntries.add(entryBuilder.startStrField(Text.of("Point Name"), pointName)
+                .setDefaultValue(pointName) // Recommended: Used when user click "Reset"
                 .setTooltip(Text.of("The name of current Point")) // Optional: Shown when the user hover over this option
-                .setSaveConsumer(newValue -> CTPMod.points[PointIndex].setName(newValue)) // Сохранить точку в CTPMod.points
+                .setSaveConsumer(point::setName) // Сохранить точку в CTPMod.points
                 .build());
-        listOfEntries.add(entryBuilder.startIntField(Text.of("Start Period Time"), CTPMod.points[PointIndex].getStartPeriod())
-                .setDefaultValue(CTPMod.points[PointIndex].getStartPeriod())
+        listOfEntries.add(entryBuilder.startIntField(Text.of("Start Period Time"), point.getStartPeriod())
+                .setDefaultValue(point.getStartPeriod())
                 .setTooltip(Text.of("Amount of seconds before rejoining server"))
-                .setSaveConsumer(newValue -> CTPMod.points[PointIndex].setStartPeriod(newValue))
+                .setSaveConsumer(point::setStartPeriod)
                 .build());
-        listOfEntries.add(entryBuilder.startIntField(Text.of("End Period Time"), CTPMod.points[PointIndex].getEndPeriod())
-                .setDefaultValue(CTPMod.points[PointIndex].getEndPeriod())
+        listOfEntries.add(entryBuilder.startIntField(Text.of("End Period Time"), point.getEndPeriod())
+                .setDefaultValue(point.getEndPeriod())
                 .setTooltip(Text.of("Amount of seconds after rejoining should not be executed"))
-                .setSaveConsumer(newValue -> CTPMod.points[PointIndex].setEndPeriod(newValue))
+                .setSaveConsumer(point::setEndPeriod)
                 .build());
         // startSubCategory - одна точка
-        mainCategory.addEntry(entryBuilder.startSubCategory(Text.of(CTPMod.points[PointIndex].getName()), listOfEntries).build());
+        mainCategory.addEntry(entryBuilder.startSubCategory(Text.of(pointName), listOfEntries).build());
     }
 }
