@@ -1,6 +1,7 @@
 package net.just_s.ctpmod.commands;
 
 import com.mojang.brigadier.context.CommandContext;
+import me.shedaniel.clothconfig2.api.ModifierKeyCode;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.just_s.ctpmod.CTPMod;
 import net.just_s.ctpmod.config.Point;
@@ -10,7 +11,7 @@ public class AddCommand {
         String waypointName = ctx.getArgument("name", String.class);
         int startPeriod = ctx.getArgument("startPeriod", int.class);
         int endPeriod = ctx.getArgument("endPeriod", int.class);
-        CTPMod.CONFIG.points.add(new Point(waypointName, startPeriod, endPeriod));
+        CTPMod.CONFIG.points.add(new Point(waypointName, startPeriod, endPeriod, ModifierKeyCode.unknown()));
         ctx.getSource().sendFeedback(CTPMod.generateFeedback(
                 "Point §f{0} §aadded§2 with period: §f{1}-{2}§2.",
                 waypointName, startPeriod, endPeriod

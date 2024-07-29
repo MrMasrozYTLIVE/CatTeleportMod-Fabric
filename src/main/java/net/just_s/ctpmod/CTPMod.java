@@ -1,14 +1,19 @@
 package net.just_s.ctpmod;
 
 import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.gui.registry.api.GuiProvider;
+import me.shedaniel.autoconfig.gui.registry.api.GuiRegistryAccess;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
+import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.just_s.ctpmod.config.ModConfig;
+import net.just_s.ctpmod.config.ModMenuIntegration;
 import net.just_s.ctpmod.config.Point;
 import net.just_s.ctpmod.util.CommandRegistry;
+import net.just_s.ctpmod.util.KeybindRegistry;
 import net.just_s.ctpmod.util.ReconnectThread;
 import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.multiplayer.ConnectScreen;
@@ -22,6 +27,8 @@ import org.apache.logging.log4j.Logger;
 
 import net.minecraft.client.MinecraftClient;
 
+import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
@@ -38,10 +45,12 @@ public class CTPMod implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		ModMenuIntegration.registerCustomTypes();
 		AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
 		CONFIG = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
 
 		CommandRegistry.registerCommands();
+		KeybindRegistry.registerKeyBinds();
 		ClientPlayConnectionEvents.JOIN.register((networkHandler, packetSender, client) -> currentServer = client.getCurrentServerEntry());
 	}
 
