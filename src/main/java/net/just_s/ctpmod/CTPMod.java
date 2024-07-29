@@ -27,8 +27,6 @@ import org.apache.logging.log4j.Logger;
 
 import net.minecraft.client.MinecraftClient;
 
-import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Objects;
 
 @Environment(EnvType.CLIENT)

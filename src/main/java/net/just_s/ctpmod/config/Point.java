@@ -13,7 +13,6 @@ import net.minecraft.client.option.KeyBinding;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder
 public class Point {
     @ConfigEntry.Gui.Tooltip
     private String name;
@@ -21,8 +20,11 @@ public class Point {
     private int startPeriod;
     @ConfigEntry.Gui.Tooltip
     private int endPeriod;
-    @ConfigEntry.Gui.Tooltip
-    private ModifierKeyCode keybind;
+    private ModifierKeyCode keybind = ModifierKeyCode.unknown();
+
+    public Point(String name, int startPeriod, int endPeriod) {
+        this(name, startPeriod, endPeriod, ModifierKeyCode.unknown());
+    }
 
     @Override
     public String toString() {
