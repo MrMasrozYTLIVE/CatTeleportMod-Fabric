@@ -5,9 +5,12 @@
   "name": "CatTeleport Mod",
   "description": "This mod allows you to rejoin any server in set period of time.",
   "authors": [
-    "Just_S"
+    "Just_S",
+    "MiTask"
   ],
   "contact": {
+    "homepage": "https://github.com/MrMasrozYTLIVE/CatTeleportMod-Fabric",
+    "issues": "https://github.com/MrMasrozYTLIVE/CatTeleportMod-Fabric/issues"
   },
 
   "license": "MIT",
