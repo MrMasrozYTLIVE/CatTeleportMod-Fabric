@@ -1,12 +1,14 @@
 package net.just_s.ctpmod;
 
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.just_s.ctpmod.config.ConfigParser;
+import net.just_s.ctpmod.config.ModConfig;
 import net.just_s.ctpmod.config.Point;
-import net.just_s.ctpmod.util.CommandManager;
+import net.just_s.ctpmod.util.CommandRegistry;
 import net.just_s.ctpmod.util.ReconnectThread;
 import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.multiplayer.ConnectScreen;
@@ -20,29 +22,29 @@ import org.apache.logging.log4j.Logger;
 
 import net.minecraft.client.MinecraftClient;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Supplier;
 
 @Environment(EnvType.CLIENT)
 public class CTPMod implements ClientModInitializer {
 	public static final String MOD_ID = "ctpmod";
-	public static final String MOD_CMD = "ctp";
 	public static final MinecraftClient MC = MinecraftClient.getInstance();
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
-	public static ConcurrentMap<String, Point> points = new ConcurrentHashMap<>();
 	public static int delta = 0;
-	public static final ConfigParser config = ConfigParser.INSTANCE;
 	public static ServerInfo currentServer = null;
 	public static CTPMod INSTANCE = new CTPMod();
 	private static ReconnectThread reconnectThread;
+	public static ModConfig CONFIG;
 
 
 	@Override
 	public void onInitializeClient() {
-		CommandManager.registerCommands();
+		AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
+		CONFIG = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+
+		CommandRegistry.registerCommands();
 		ClientPlayConnectionEvents.JOIN.register((networkHandler, packetSender, client) -> currentServer = client.getCurrentServerEntry());
 	}
 
@@ -77,7 +79,7 @@ public class CTPMod implements ClientModInitializer {
 		ConnectScreen.connect(new MultiplayerScreen(new TitleScreen()), MC, ServerAddress.parse(targetInfo.address), targetInfo, false, (CookieStorage)null);
 	}
 
-	public static Text generateFeedback(String message, Object... args) {
+	public static Supplier<Text> generateFeedback(String message, Object... args) {
 		//Send message in chat that only user can see
 		//§0  black			§8	dark_gray		§g	minecoin_gold
 		//§1  dark_blue		§9	blue			§f	white
@@ -88,6 +90,7 @@ public class CTPMod implements ClientModInitializer {
 		for (int i = 0; i < args.length; i++) {
 			message = message.replace("{" + i + "}", args[i].toString());
 		}
-		return Text.of("§8[§6CatTeleport§8]§2 " + message);
+		String finalMessage = message;
+		return () -> Text.of("§8[§6CatTeleport§8]§2 " + finalMessage);
 	}
 }

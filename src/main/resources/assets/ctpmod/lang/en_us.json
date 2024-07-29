@@ -1,0 +1,13 @@
+{
+  "text.autoconfig.ctpmod.title": "Point Menu",
+  "text.autoconfig.ctpmod.option.delta": "Delta",
+  "text.autoconfig.ctpmod.option.delta.@Tooltip": "Amount of seconds between server and client (can be negative)",
+  "text.autoconfig.ctpmod.option.points": "Points",
+  "text.autoconfig.ctpmod.option.Point": "Point",
+  "text.autoconfig.ctpmod.option.Point.name": "Point Name",
+  "text.autoconfig.ctpmod.option.Point.name.@Tooltip": "The name of current Point",
+  "text.autoconfig.ctpmod.option.Point.startPeriod": "Start Period Time",
+  "text.autoconfig.ctpmod.option.Point.startPeriod.@Tooltip": "Amount of seconds before rejoining server",
+  "text.autoconfig.ctpmod.option.Point.endPeriod": "End Period Time",
+  "text.autoconfig.ctpmod.option.Point.endPeriod.@Tooltip": "Amount of seconds after rejoining should not be executed"
+}

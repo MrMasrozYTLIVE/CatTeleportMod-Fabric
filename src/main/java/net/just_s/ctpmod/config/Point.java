@@ -1,17 +1,23 @@
 package net.just_s.ctpmod.config;
 
 import com.google.gson.Gson;
+import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Point {
+    @ConfigEntry.Gui.Tooltip
     private String name;
+    @ConfigEntry.Gui.Tooltip
     private int startPeriod;
+    @ConfigEntry.Gui.Tooltip
     private int endPeriod;
 
-    public Point(@Nullable String name, int startPeriod, int endPeriod) {
+    public Point() {}
+
+    public Point(String name, int startPeriod, int endPeriod) {
         this.name = name;
         this.startPeriod = startPeriod;
         this.endPeriod = endPeriod;
