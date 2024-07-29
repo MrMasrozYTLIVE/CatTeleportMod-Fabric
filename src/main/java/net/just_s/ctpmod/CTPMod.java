@@ -23,9 +23,6 @@ import org.apache.logging.log4j.Logger;
 import net.minecraft.client.MinecraftClient;
 
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.function.Supplier;
 
 @Environment(EnvType.CLIENT)
 public class CTPMod implements ClientModInitializer {
@@ -79,7 +76,7 @@ public class CTPMod implements ClientModInitializer {
 		ConnectScreen.connect(new MultiplayerScreen(new TitleScreen()), MC, ServerAddress.parse(targetInfo.address), targetInfo, false, (CookieStorage)null);
 	}
 
-	public static Supplier<Text> generateFeedback(String message, Object... args) {
+	public static Text generateFeedback(String message, Object... args) {
 		//Send message in chat that only user can see
 		//§0  black			§8	dark_gray		§g	minecoin_gold
 		//§1  dark_blue		§9	blue			§f	white
@@ -90,7 +87,6 @@ public class CTPMod implements ClientModInitializer {
 		for (int i = 0; i < args.length; i++) {
 			message = message.replace("{" + i + "}", args[i].toString());
 		}
-		String finalMessage = message;
-		return () -> Text.of("§8[§6CatTeleport§8]§2 " + finalMessage);
+		return Text.of("§8[§6CatTeleport§8]§2 " + message);
 	}
 }
