@@ -7,7 +7,6 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.just_s.ctpmod.CTPMod;
 import net.just_s.ctpmod.config.Point;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class TpCommand {
@@ -26,8 +25,8 @@ public class TpCommand {
             return 1;
         }
         String pointName = ctx.getArgument("name", String.class);
-        Optional<Point> point = CTPMod.CONFIG.points.stream().filter(p -> p.getName().equals(pointName)).findFirst();
-        if (point.isEmpty()) {
+        Point point = CTPMod.getPoint(pointName);
+        if (point == null) {
             ctx.getSource().sendFeedback(CTPMod.generateFeedback(
                     "§cThere is no §fPoint §cwith name \"§f{0}§c\".",
                     pointName
@@ -36,7 +35,7 @@ public class TpCommand {
         }
 
         //if everything is okay, only then start reconnect cycle:
-        CTPMod.startReconnect(point.get());
+        CTPMod.startReconnect(point);
         return 1;
     }
 }

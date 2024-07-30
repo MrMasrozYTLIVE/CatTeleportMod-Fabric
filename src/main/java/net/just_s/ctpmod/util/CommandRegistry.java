@@ -14,7 +14,7 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.arg
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 public class CommandRegistry {
-    public static void registerCommands() {
+    public static void register() {
         ClientCommandRegistrationCallback.EVENT.register((CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registryAccess) -> {
             LiteralCommandNode<FabricClientCommandSource> mainCommand = literal("ctp").build();
 

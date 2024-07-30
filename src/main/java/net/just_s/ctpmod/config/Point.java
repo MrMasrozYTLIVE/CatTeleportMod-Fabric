@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
-
 @Getter
 @Setter
 @AllArgsConstructor

@@ -1,6 +1,7 @@
 package net.just_s.ctpmod;
 
 import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.ConfigHolder;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
@@ -13,7 +14,6 @@ import net.just_s.ctpmod.util.ReconnectThread;
 import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.multiplayer.ConnectScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
-import net.minecraft.client.network.CookieStorage;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.text.Text;
@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 import net.minecraft.client.MinecraftClient;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Environment(EnvType.CLIENT)
 public class CTPMod implements ClientModInitializer {
@@ -34,13 +35,15 @@ public class CTPMod implements ClientModInitializer {
 	public static CTPMod INSTANCE = new CTPMod();
 	private static ReconnectThread reconnectThread;
 	public static ModConfig CONFIG;
+	private static ConfigHolder<ModConfig> CONFIG_HOLDER;
 
 	@Override
 	public void onInitializeClient() {
 		AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
-		CONFIG = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+		CONFIG_HOLDER = AutoConfig.getConfigHolder(ModConfig.class);
+		CONFIG = CONFIG_HOLDER.getConfig();
 
-		CommandRegistry.registerCommands();
+		CommandRegistry.register();
 		ClientPlayConnectionEvents.JOIN.register((networkHandler, packetSender, client) -> currentServer = client.getCurrentServerEntry());
 	}
 
@@ -87,5 +90,29 @@ public class CTPMod implements ClientModInitializer {
 			message = message.replace("{" + i + "}", args[i].toString());
 		}
 		return Text.of("§8[§6CatTeleport§8]§2 " + message);
+	}
+
+	public static Point getPoint(String name) {
+		if(name.isEmpty()) return null;
+		Optional<Point> point = CONFIG.points.stream().filter(p -> p.getName().equalsIgnoreCase(name)).findFirst();
+        return point.orElse(null);
+    }
+
+	public static boolean addPoint(Point point) {
+		if(point == null) return false;
+		CONFIG.points.add(point);
+		CONFIG_HOLDER.save();
+
+		return true;
+	}
+
+	public static boolean deletePoint(Point point) {
+		boolean deleted = CONFIG.points.remove(point);
+		CONFIG_HOLDER.save();
+		return deleted;
+	}
+
+	public static boolean deletePoint(String name) {
+		return deletePoint(getPoint(name));
 	}
 }
