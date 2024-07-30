@@ -3,6 +3,8 @@ package net.just_s.ctpmod;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigHolder;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
+import me.shedaniel.clothconfig2.api.ModifierKeyCode;
+import me.shedaniel.clothconfig2.impl.ModifierKeyCodeImpl;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -10,6 +12,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.just_s.ctpmod.config.ModConfig;
 import net.just_s.ctpmod.config.Point;
 import net.just_s.ctpmod.util.CommandRegistry;
+import net.just_s.ctpmod.util.KeybindRegistry;
 import net.just_s.ctpmod.util.ReconnectThread;
 import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.multiplayer.ConnectScreen;
@@ -30,7 +33,7 @@ public class CTPMod implements ClientModInitializer {
 	public static final String MOD_ID = "ctpmod";
 	public static final MinecraftClient MC = MinecraftClient.getInstance();
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
-	public static int delta = 0;
+    public static final ModifierKeyCodeImpl DEFAULT_KEYBIND = (ModifierKeyCodeImpl) ModifierKeyCode.unknown();
 	public static ServerInfo currentServer = null;
 	public static CTPMod INSTANCE = new CTPMod();
 	private static ReconnectThread reconnectThread;
@@ -39,21 +42,25 @@ public class CTPMod implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		KeybindRegistry.registerType();
 		AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
 		CONFIG_HOLDER = AutoConfig.getConfigHolder(ModConfig.class);
 		CONFIG = CONFIG_HOLDER.getConfig();
 
 		CommandRegistry.register();
+		KeybindRegistry.registerEvent();
 		ClientPlayConnectionEvents.JOIN.register((networkHandler, packetSender, client) -> currentServer = client.getCurrentServerEntry());
 	}
 
 	public static void startReconnect(Point point) {
+		if (CTPMod.MC.isInSingleplayer()) return;
+
 		Screen newScr = new DisconnectedScreen(
 				new MultiplayerScreen(new TitleScreen()),
 				Text.of("§8[§6CatTeleport§8]"),
 				Text.of("startReconnect"));
 
-		Objects.requireNonNull(CTPMod.MC.getNetworkHandler()).getConnection().disconnect(Text.translatable("reconnecting"));
+		Objects.requireNonNull(CTPMod.MC.getNetworkHandler()).getConnection().disconnect(Text.of("reconnecting"));
 		MC.disconnect();
 
 		reconnectThread = new ReconnectThread(point.getStartPeriod(), point.getEndPeriod());
@@ -98,12 +105,10 @@ public class CTPMod implements ClientModInitializer {
         return point.orElse(null);
     }
 
-	public static boolean addPoint(Point point) {
-		if(point == null) return false;
+	public static void addPoint(Point point) {
+		if(point == null) return;
 		CONFIG.points.add(point);
 		CONFIG_HOLDER.save();
-
-		return true;
 	}
 
 	public static boolean deletePoint(Point point) {

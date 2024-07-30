@@ -20,7 +20,7 @@ public class ReconnectThread extends Thread {
     @Override
     public void run() {
         try {
-            float seconds = Math.max(secondsToReconnect - CTPMod.delta, 0);
+            float seconds = Math.max(secondsToReconnect - CTPMod.CONFIG.delta, 0);
             CTPMod.LOGGER.info("reconnect in {} sec", seconds);
 
             Thread.sleep((long) (seconds * 1000L));
