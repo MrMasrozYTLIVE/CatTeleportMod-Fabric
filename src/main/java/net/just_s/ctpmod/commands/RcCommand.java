@@ -1,7 +1,6 @@
 package net.just_s.ctpmod.commands;
 
 import com.mojang.brigadier.context.CommandContext;
-import me.shedaniel.clothconfig2.api.ModifierKeyCode;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.just_s.ctpmod.CTPMod;
 import net.just_s.ctpmod.config.Point;
@@ -15,7 +14,7 @@ public class RcCommand {
             ));
             return 1;
         }
-        CTPMod.startReconnect(new Point(null, seconds, seconds, ModifierKeyCode.unknown()));
+        CTPMod.startReconnect(new Point(null, seconds, seconds));
         return 1;
     }
 }

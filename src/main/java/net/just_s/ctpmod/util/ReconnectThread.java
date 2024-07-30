@@ -4,20 +4,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.just_s.ctpmod.CTPMod;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ServerAddress;
-import net.minecraft.client.network.ServerInfo;
-import org.apache.commons.lang3.ArrayUtils;
-
-import java.io.IOException;
-import java.net.Socket;
-import java.util.Arrays;
-import java.util.Collections;
 
 @Environment(EnvType.CLIENT)
 public class ReconnectThread extends Thread {
-    private final int secondsToReconnect;
+    private final float secondsToReconnect;
 
-    public ReconnectThread(int start, int end) {
+    public ReconnectThread(float start, float end) {
         super();
         this.secondsToReconnect = (end - start) / 2 + start;
     }
@@ -28,10 +20,10 @@ public class ReconnectThread extends Thread {
     @Override
     public void run() {
         try {
-            int seconds = secondsToReconnect - CTPMod.delta;
-            CTPMod.LOGGER.info("reconnect in {} sec", Math.max(seconds, 0));
+            float seconds = Math.max(secondsToReconnect - CTPMod.delta, 0);
+            CTPMod.LOGGER.info("reconnect in {} sec", seconds);
 
-            Thread.sleep(Math.max(seconds, 0) * 1000L);
+            Thread.sleep((long) (seconds * 1000L));
             synchronized (this) {
                 CTPMod.LOGGER.info("Reconnecting to server.");
                 MinecraftClient.getInstance().execute(CTPMod.INSTANCE::finishReconnect);

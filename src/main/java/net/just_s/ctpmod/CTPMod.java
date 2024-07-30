@@ -1,19 +1,14 @@
 package net.just_s.ctpmod;
 
 import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.gui.registry.api.GuiProvider;
-import me.shedaniel.autoconfig.gui.registry.api.GuiRegistryAccess;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
-import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.just_s.ctpmod.config.ModConfig;
-import net.just_s.ctpmod.config.ModMenuIntegration;
 import net.just_s.ctpmod.config.Point;
 import net.just_s.ctpmod.util.CommandRegistry;
-import net.just_s.ctpmod.util.KeybindRegistry;
 import net.just_s.ctpmod.util.ReconnectThread;
 import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.multiplayer.ConnectScreen;
@@ -40,15 +35,12 @@ public class CTPMod implements ClientModInitializer {
 	private static ReconnectThread reconnectThread;
 	public static ModConfig CONFIG;
 
-
 	@Override
 	public void onInitializeClient() {
-		ModMenuIntegration.registerCustomTypes();
 		AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
 		CONFIG = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
 
 		CommandRegistry.registerCommands();
-		KeybindRegistry.registerKeyBinds();
 		ClientPlayConnectionEvents.JOIN.register((networkHandler, packetSender, client) -> currentServer = client.getCurrentServerEntry());
 	}
 
@@ -80,7 +72,7 @@ public class CTPMod implements ClientModInitializer {
 	}
 
 	public void connectToServer(ServerInfo targetInfo) {
-		ConnectScreen.connect(new MultiplayerScreen(new TitleScreen()), MC, ServerAddress.parse(targetInfo.address), targetInfo, false, (CookieStorage)null);
+		ConnectScreen.connect(new MultiplayerScreen(new TitleScreen()), MC, ServerAddress.parse(targetInfo.address), targetInfo, false, null);
 	}
 
 	public static Text generateFeedback(String message, Object... args) {

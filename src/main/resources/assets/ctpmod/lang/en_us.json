@@ -9,6 +9,5 @@
   "text.autoconfig.ctpmod.option.Point.startPeriod": "Start Period Time",
   "text.autoconfig.ctpmod.option.Point.startPeriod.@Tooltip": "Amount of seconds before rejoining server",
   "text.autoconfig.ctpmod.option.Point.endPeriod": "End Period Time",
-  "text.autoconfig.ctpmod.option.Point.endPeriod.@Tooltip": "Amount of seconds after rejoining should not be executed",
-  "text.autoconfig.ctpmod.option.Point.keybind": "KeyBind"
+  "text.autoconfig.ctpmod.option.Point.endPeriod.@Tooltip": "Amount of seconds after rejoining should not be executed"
 }
