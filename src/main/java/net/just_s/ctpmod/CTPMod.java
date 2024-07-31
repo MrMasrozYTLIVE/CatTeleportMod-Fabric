@@ -8,7 +8,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.loader.api.FabricLoader;
 import net.just_s.ctpmod.config.KeyBind;
 import net.just_s.ctpmod.config.ModConfig;
 import net.just_s.ctpmod.config.Point;
