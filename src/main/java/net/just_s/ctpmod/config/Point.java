@@ -3,7 +3,6 @@ package net.just_s.ctpmod.config;
 import lombok.*;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.clothconfig2.api.ModifierKeyCode;
-import me.shedaniel.clothconfig2.impl.ModifierKeyCodeImpl;
 import net.just_s.ctpmod.CTPMod;
 
 @Getter
@@ -17,7 +16,7 @@ public class Point {
     private float startPeriod;
     @ConfigEntry.Gui.Tooltip
     private float endPeriod;
-    private ModifierKeyCodeImpl keyBind = CTPMod.DEFAULT_KEYBIND;
+    private KeyBind keyBind = CTPMod.DEFAULT_KEYBIND;
 
     public Point(String name, float startPeriod, float endPeriod) {
         this(name, startPeriod, endPeriod, CTPMod.DEFAULT_KEYBIND);
@@ -29,6 +28,6 @@ public class Point {
     }
 
     public void setKeyBind(ModifierKeyCode modifierKeyCode) {
-        this.keyBind = (ModifierKeyCodeImpl) modifierKeyCode;
+        this.keyBind = KeyBind.of(modifierKeyCode);
     }
 }

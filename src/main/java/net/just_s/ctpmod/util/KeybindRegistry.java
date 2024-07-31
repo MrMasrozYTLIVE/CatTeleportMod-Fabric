@@ -7,6 +7,7 @@ import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import me.shedaniel.clothconfig2.impl.ModifierKeyCodeImpl;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.just_s.ctpmod.CTPMod;
+import net.just_s.ctpmod.config.KeyBind;
 import net.just_s.ctpmod.config.ModConfig;
 import net.just_s.ctpmod.config.Point;
 import net.minecraft.text.Text;
@@ -18,17 +19,17 @@ public class KeybindRegistry {
     public static void registerType() {
         AutoConfig.getGuiRegistry(ModConfig.class).registerTypeProvider((i18n, field, config, defaults, registry) -> {
             Point point = (Point) config;
-            ModifierKeyCodeImpl keyCode = Utils.getUnsafely(field, point, CTPMod.DEFAULT_KEYBIND);
+            KeyBind keyBind = Utils.getUnsafely(field, point, CTPMod.DEFAULT_KEYBIND);
 
             List<AbstractConfigListEntry> list = new ArrayList<>();
             ConfigEntryBuilder builder = ConfigEntryBuilder.create();
-            list.add(builder.startModifierKeyCodeField(Text.translatable(i18n), keyCode)
+            list.add(builder.startModifierKeyCodeField(Text.translatable(i18n), keyBind.toModifierKeyCode())
                     .setModifierSaveConsumer(point::setKeyBind)
                     .setAllowMouse(false)
                     .build());
 
             return list;
-        }, ModifierKeyCodeImpl.class);
+        }, KeyBind.class);
     }
 
     public static void registerEvent() {
@@ -36,7 +37,7 @@ public class KeybindRegistry {
             if(client.currentScreen != null) return;
 
             for(Point point : CTPMod.CONFIG.points) {
-                if(point.getKeyBind().matchesCurrentKey()) CTPMod.startReconnect(point);
+                if(point.getKeyBind().toModifierKeyCode().matchesCurrentKey()) CTPMod.startReconnect(point);
             }
         });
     }

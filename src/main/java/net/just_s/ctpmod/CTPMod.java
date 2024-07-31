@@ -9,6 +9,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.just_s.ctpmod.config.KeyBind;
 import net.just_s.ctpmod.config.ModConfig;
 import net.just_s.ctpmod.config.Point;
 import net.just_s.ctpmod.util.CommandRegistry;
@@ -33,7 +34,7 @@ public class CTPMod implements ClientModInitializer {
 	public static final String MOD_ID = "ctpmod";
 	public static final MinecraftClient MC = MinecraftClient.getInstance();
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
-    public static final ModifierKeyCodeImpl DEFAULT_KEYBIND = (ModifierKeyCodeImpl) ModifierKeyCode.unknown();
+    public static final KeyBind DEFAULT_KEYBIND = KeyBind.of(ModifierKeyCode.unknown());
 	public static ServerInfo currentServer = null;
 	public static CTPMod INSTANCE = new CTPMod();
 	private static ReconnectThread reconnectThread;
