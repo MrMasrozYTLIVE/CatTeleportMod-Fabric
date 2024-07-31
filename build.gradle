@@ -1,7 +1,17 @@
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
+
 plugins {
-	id 'fabric-loom' version '1.7-SNAPSHOT'
-	id 'maven-publish'
+	id("fabric-loom") version("1.7-SNAPSHOT")
+	id("maven-publish")
+	id("com.modrinth.minotaur") version("2.8.7")
+	id("net.darkhax.curseforgegradle") version("1.1.24")
+	id("com.github.breadmoirai.github-release") version("2.5.2")
+	id("org.ajoberstar.grgit.service") version("5.2.2")
 }
+
+apply(plugin: "com.modrinth.minotaur")
+apply(plugin: "com.github.breadmoirai.github-release")
+apply(plugin: "org.ajoberstar.grgit.service")
 
 sourceCompatibility = JavaVersion.VERSION_21
 targetCompatibility = JavaVersion.VERSION_21
@@ -18,6 +28,7 @@ repositories {
 	// for more information about repositories.
 	maven { url "https://maven.shedaniel.me/" }
 	maven { url "https://maven.terraformersmc.com/releases"}
+	maven { url "https://maven.fabricmc.net/"}
 }
 
 dependencies {
@@ -37,6 +48,7 @@ dependencies {
 
 	compileOnly 'org.projectlombok:lombok:1.18.34'
 	annotationProcessor 'org.projectlombok:lombok:1.18.34'
+
 }
 
 processResources {
@@ -48,36 +60,82 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
+	it.options.encoding = "UTF-8"
 	it.options.release = 21
 }
 
-java {
-	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-	// if it is present.
-	// If you remove this line, sources will not be generated.
-	withSourcesJar()
-}
-
 jar {
-	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}"}
+	from(rootProject.file("LICENSE")) {
+		rename { "${it}_${project.archivesBaseName}" }
+	}
+	manifest {
+		attributes([
+				"Specification-Title"     : "CatTeleportMod",
+				"Specification-Vendor"    : "MiTask",
+				"Specification-Version"   : project.jar.archiveVersion,
+				"Implementation-Title"    : project.name,
+				"Implementation-Version"  : project.jar.archiveVersion,
+				"Implementation-Vendor"   : "MiTask",
+				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+				"Timestamp"               : System.currentTimeMillis(),
+				"Built-On-Java"           : "${System.getProperty('java.vm.version')} (${System.getProperty('java.vm.vendor')})",
+				"Built-On-Minecraft"      : minecraft_version
+		])
 	}
 }
 
-// configure the maven publication
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
+afterEvaluate {
+	modrinth {
+		token = System.getenv().MODRINTH_TOKEN ? System.getenv().MODRINTH_TOKEN : "empty"
+		projectId = modrinth_id
+		versionNumber = mod_version
+		versionType = release_type
+		versionName = "v${mod_version.split("-")[1]}-Fabric-${minecraft_version}"
+		changelog = rootProject.file("changelog.md").text
+		uploadFile = remapJar
+		loaders = List.of("fabric", "quilt")
+		gameVersions = List.of(minecraft_versions)
+		syncBodyFrom = rootProject.file("README.md").text
+	}
+	tasks.modrinth.onlyIf { System.getenv().MODRINTH_TOKEN }
+	tasks.modrinth.dependsOn(build, tasks.modrinthSyncBody)
+	tasks.modrinthSyncBody.onlyIf { System.getenv().MODRINTH_TOKEN }
+
+	task curseforge(type: TaskPublishCurseForge) {
+		apiToken = System.getenv().CURSEFORGE_TOKEN ? System.getenv().CURSEFORGE_TOKEN : ""
+		if (apiToken.isBlank()) return
+
+		disableVersionDetection()
+
+		def file = upload(curseforge_id, remapJar)
+		file.displayName = "v${mod_version.split("-")[1]}-Fabric-${minecraft_version}"
+		file.releaseType = release_type
+		file.changelog = rootProject.file("changelog.md").text
+		file.changelogType = 'markdown'
+
+		file.addModLoader("fabric")
+		file.addModLoader("quilt")
+
+		project.property("minecraft_versions").split(",").each { String id ->
+			file.addGameVersion(id, "fabric")
 		}
 	}
+	tasks.curseforge.onlyIf { System.getenv().CURSEFORGE_TOKEN }
+	tasks.curseforge.dependsOn(build)
 
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
+	githubRelease {
+		token = System.getenv().GITHUB_TOKEN ? System.getenv().GITHUB_TOKEN : "empty"
+		owner = github_repo_owner
+		repo = github_repo
+		tagName = "v${mod_version}"
+		prerelease = release_type == "alpha" || release_type == "beta"
+		releaseName = "v${mod_version.split("-")[1]} ${minecraft_version}"
+		body = rootProject.file("changelog.md").text
+		targetCommitish = grgitService.service.get().grgit.branch.current().name
+		overwrite = false
+		allowUploadToExisting = true
+		releaseAssets = List.of(remapJar)
 	}
+	tasks.githubRelease.onlyIf { System.getenv().GITHUB_TOKEN }
+	tasks.githubRelease.dependsOn(build)
 }

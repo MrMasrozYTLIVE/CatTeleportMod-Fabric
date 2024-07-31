@@ -1,6 +1,10 @@
 pluginManagement {
     repositories {
         maven {
+            name = 'ModRinth'
+            url = "https://api.modrinth.com/maven"
+        }
+        maven {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
         }

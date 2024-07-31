@@ -8,6 +8,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.just_s.ctpmod.config.KeyBind;
 import net.just_s.ctpmod.config.ModConfig;
 import net.just_s.ctpmod.config.Point;
@@ -54,6 +55,9 @@ public class CTPMod implements ClientModInitializer {
 
 	public static void startReconnect(Point point) {
 		if (CTPMod.MC.isInSingleplayer()) return;
+
+		// TODO: Uncomment this once API is added
+        // if (FabricLoader.getInstance().isModLoaded("autoreconnectrf")) AutoReconnect.cancelReconnect();
 
 		Screen newScr = new DisconnectedScreen(
 				new MultiplayerScreen(new TitleScreen()),

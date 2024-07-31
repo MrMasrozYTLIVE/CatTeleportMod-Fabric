@@ -1,0 +1,1 @@
+Added basic compatibility with AutoConnectReforged mod
