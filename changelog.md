@@ -1,1 +1,1 @@
-Added basic compatibility with AutoConnectReforged mod
+Added compatibility with https://modrinth.com/mod/autoreconnectrf
