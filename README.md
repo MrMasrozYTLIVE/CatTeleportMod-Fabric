@@ -17,7 +17,14 @@ CatTeleport is a lightweight Fabric mod for Minecraft designed to automate telep
 
 For more detailed information and usage examples, visit our [wiki](https://github.com/MrMasrozYTLIVE/CatTeleportMod-Fabric/wiki).
 
- 
+-----------------------------
+### Links:
+- [CurseForge](https://www.curseforge.com/minecraft/mc-mods/catteleportmod)
+- [Discord](https://discord.gg/kma9t6Yqmp)
+
+Videos explaining CatPorters
+- [Russian Video](https://youtu.be/jUkC2UC1MhQ?t=252) 
+- [English Video](https://www.youtube.com/watch?v=w-H3kzPcBVM)
 
 -----------------------------
 ### Credits:
