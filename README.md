@@ -1,4 +1,4 @@
-CatTeleport is a lightweight Fabric mod for Minecraft designed to automate teleportation using cat-powered contraptions. This mod allows players to manage reconnection times and streamline their teleportation process. ([Russian Video](https://youtu.be/jUkC2UC1MhQ?t=252) / [English Video](https://www.youtube.com/watch?v=w-H3kzPcBVM) about cat-powered contraptions)
+CatTeleport is a lightweight Fabric mod for Minecraft designed to automate teleportation using cat-powered contraptions. This mod allows players to manage reconnection times and streamline their teleportation process. ([Showcase of the mod](https://youtu.be/4FgYu91SzcI) to learn more about CatPorters please check Links section below)
 
 
 ### Features:
