@@ -1,15 +1,8 @@
 plugins {
 	id("fabric-loom") version("1.7-SNAPSHOT")
 	id("maven-publish")
-	id("com.modrinth.minotaur") version("2.8.7")
-//	id("io.github.CDAGaming.cursegradle") version("1.6.1")
-	id("com.github.breadmoirai.github-release") version("2.5.2")
-	id("org.ajoberstar.grgit.service") version("5.2.2")
+	id("com.hypherionmc.modutils.modpublisher") version("2.1.6")
 }
-
-apply(plugin: "com.modrinth.minotaur")
-apply(plugin: "com.github.breadmoirai.github-release")
-apply(plugin: "org.ajoberstar.grgit.service")
 
 sourceCompatibility = JavaVersion.VERSION_21
 targetCompatibility = JavaVersion.VERSION_21
@@ -91,69 +84,49 @@ jar {
 	}
 }
 
-modrinth {
-	token = System.getenv().MODRINTH_TOKEN ? System.getenv().MODRINTH_TOKEN : "empty"
-	projectId = modrinth_id
-	versionNumber = mod_version
-	versionType = release_type
-	versionName = "v${mod_version.split("-")[1]}-Fabric-${minecraft_version}"
-	changelog = rootProject.file("changelog.md").text
-	uploadFile = remapJar
-	loaders = List.of("fabric", "quilt")
-	gameVersions = List.of(minecraft_versions)
-	syncBodyFrom = rootProject.file("README.md").text
-}
-tasks.modrinth.onlyIf { System.getenv().MODRINTH_TOKEN }
-tasks.modrinth.dependsOn(build, tasks.modrinthSyncBody)
-tasks.modrinthSyncBody.onlyIf { System.getenv().MODRINTH_TOKEN }
+publisher {
+	apiKeys {
+		modrinth System.getenv().MODRINTH_TOKEN
+		curseforge System.getenv().CURSEFORGE_TOKEN
+		github System.getenv().GITHUB_TOKEN
+	}
 
-//curseforge {
-//	apiKey = System.getenv().CURSEFORGE_TOKEN ? System.getenv().CURSEFORGE_TOKEN : ""
-//	if (apiKey.isBlank()) return
-//
-//	project {
-//		id = curseforge_id
-//		changelog = rootProject.file("changelog.md").text
-//		changelogType = 'markdown'
-//		releaseType = release_type
-//
-//		addGameVersion 'fabric'
-//		addGameVersion 'quilt'
-//
-//		project.property("minecraft_versions").split(",").each { String id ->
-//			addGameVersion(id)
-//		}
-//
-//		mainArtifact(remapJar) {
-//			it.displayName = "v${mod_version.split("-")[1]}-Fabric-${minecraft_version}"
-//		}
-//	}
-//	options {
-//		forgeGradleIntegration = false
-//	}
-//}
-//tasks.curseforge.onlyIf { System.getenv().CURSEFORGE_TOKEN }
-//tasks.curseforge.dependsOn(build)
+	setDebug(true)
 
-githubRelease {
-	token = System.getenv().GITHUB_TOKEN ? System.getenv().GITHUB_TOKEN : "empty"
-	owner = github_repo_owner
-	repo = github_repo
-	tagName = "v${mod_version}"
-	prerelease = release_type == "alpha" || release_type == "beta"
-	releaseName = "v${mod_version.split("-")[1]} ${minecraft_version}"
-	body = rootProject.file("changelog.md").text
-	targetCommitish = grgitService.service.get().grgit.branch.current().name
-	overwrite = false
-	allowUploadToExisting = true
-	releaseAssets = List.of(remapJar)
-}
-tasks.githubRelease.onlyIf { System.getenv().GITHUB_TOKEN }
-tasks.githubRelease.dependsOn(build)
+	setCurseID(curseforge_id)
+	setModrinthID(modrinth_id)
 
-tasks.register('publishToModSites', GradleBuild) {
-	tasks = ['modrinth',
-//			 'curseforge',
-			 'githubRelease',
-			 'compileJava']
+	setVersionType(release_type)
+	setChangelog("changelog.md")
+
+	setProjectVersion(mod_version)
+	setDisplayName("CatTeleportMod ${mod_version}")
+
+	setGameVersions(List.of(minecraft_versions))
+
+	setLoaders("fabric")
+	setCurseEnvironment("client")
+
+	setArtifact(remapJar)
+
+	setDisableMalwareScanner(true)
+
+	setJavaVersions(List.of(JavaVersion.VERSION_21))
+	setDisableEmptyJarCheck(true)
+
+	github {
+		repo = "MrMasrozYTLIVE/CatTeleportMod-Fabric"
+		tag = "CatTeleportMod ${mod_version}"
+		target = "master"
+	}
+
+	modrinthDepends {
+		required "fabric-api", "cloth-config"
+		optional 'modmenu'
+	}
+
+	curseDepends {
+		required "fabric-api", "cloth-config"
+		optional 'modmenu'
+	}
 }

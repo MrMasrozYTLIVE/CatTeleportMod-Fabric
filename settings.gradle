@@ -8,6 +8,9 @@ pluginManagement {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
         }
+        maven {
+            url "https://maven.firstdark.dev/releases"
+        }
         mavenCentral()
         gradlePluginPortal()
     }

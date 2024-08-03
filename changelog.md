@@ -1,1 +1,0 @@
-Added compatibility with https://modrinth.com/mod/autoreconnectrf
