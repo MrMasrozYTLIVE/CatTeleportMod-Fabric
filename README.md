@@ -24,7 +24,7 @@ For more detailed information and usage examples, visit our [wiki](https://githu
 
 Videos explaining CatPorters
 - [Russian Video](https://youtu.be/jUkC2UC1MhQ?t=252) 
-- [English Video](https://www.youtube.com/watch?v=w-H3kzPcBVM)
+- [English Video](https://www.youtube.com/watch?v=iapoJXnnoQU)
 
 -----------------------------
 ### Credits:
