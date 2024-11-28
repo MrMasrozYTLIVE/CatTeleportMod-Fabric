@@ -1,3 +1,5 @@
+import com.hypherionmc.modpublisher.properties.ModLoader
+
 plugins {
 	id("fabric-loom") version("1.7-SNAPSHOT")
 	id("maven-publish")
@@ -93,18 +95,18 @@ publisher {
 
 	setDebug(true)
 
-	setCurseID(curseforge_id)
+//	setCurseID(curseforge_id)
 	setModrinthID(modrinth_id)
 
 	setVersionType(release_type)
-	setChangelog("changelog.md")
+	setChangelog("https://raw.githubusercontent.com/MrMasrozYTLIVE/CatTeleportMod-Fabric/refs/heads/master/changelog.md")
 
 	setProjectVersion(mod_version)
 	setDisplayName("CatTeleportMod ${mod_version}")
 
-	setGameVersions(List.of(minecraft_versions))
+	setGameVersions(List.of(minecraft_versions.split(" ")))
 
-	setLoaders("fabric")
+	setLoaders(ModLoader.FABRIC, ModLoader.QUILT)
 	setCurseEnvironment("client")
 
 	setArtifact(remapJar)
@@ -116,8 +118,9 @@ publisher {
 
 	github {
 		repo = "MrMasrozYTLIVE/CatTeleportMod-Fabric"
-		tag = "CatTeleportMod ${mod_version}"
+		tag = "CatTeleportMod-${mod_version}"
 		target = "master"
+		draft = false
 	}
 
 	modrinthDepends {
