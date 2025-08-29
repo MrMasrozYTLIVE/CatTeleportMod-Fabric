@@ -66,12 +66,10 @@ public class CTPMod implements ClientModInitializer {
 				Text.of("startReconnect"));
 
 		Objects.requireNonNull(CTPMod.MC.getNetworkHandler()).getConnection().disconnect(Text.of("reconnecting"));
-		MC.disconnect();
+		MC.disconnect(newScr, false);
 
 		reconnectThread = new ReconnectThread(point.getStartPeriod(), point.getEndPeriod());
 		reconnectThread.start();
-
-		MC.setScreen(newScr);
 	}
 
 	public void finishReconnect() {
