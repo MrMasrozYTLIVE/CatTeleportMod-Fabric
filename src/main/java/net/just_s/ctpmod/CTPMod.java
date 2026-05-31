@@ -16,27 +16,27 @@ import net.just_s.ctpmod.config.Point;
 import net.just_s.ctpmod.util.CommandRegistry;
 import net.just_s.ctpmod.util.KeybindRegistry;
 import net.just_s.ctpmod.util.ReconnectThread;
-import net.minecraft.client.gui.screen.*;
-import net.minecraft.client.gui.screen.multiplayer.ConnectScreen;
-import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
-import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.network.ServerAddress;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ConnectScreen;
+import net.minecraft.client.gui.screens.DisconnectedScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.multiplayer.resolver.ServerAddress;
+import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import net.minecraft.client.MinecraftClient;
-
 import java.util.Objects;
 import java.util.Optional;
 
 @Environment(EnvType.CLIENT)
 public class CTPMod implements ClientModInitializer {
 	public static final String MOD_ID = "ctpmod";
-	public static final MinecraftClient MC = MinecraftClient.getInstance();
+	public static final Minecraft MC = Minecraft.getInstance();
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
     public static final KeyBind DEFAULT_KEYBIND = KeyBind.of(ModifierKeyCode.unknown());
-	public static ServerInfo currentServer = null;
+	public static ServerData currentServer = null;
 	public static CTPMod INSTANCE = new CTPMod();
 	private static ReconnectThread reconnectThread;
 	public static ModConfig CONFIG;
@@ -51,21 +51,26 @@ public class CTPMod implements ClientModInitializer {
 
 		CommandRegistry.register();
 		KeybindRegistry.registerEvent();
-		ClientPlayConnectionEvents.JOIN.register((networkHandler, packetSender, client) -> currentServer = client.getCurrentServerEntry());
+		ClientPlayConnectionEvents.JOIN.register((networkHandler, packetSender, client) -> currentServer = client.getCurrentServer());
 	}
 
 	static boolean isAutoReconnectPresent = FabricLoader.getInstance().isModLoaded("autoreconnectrf");
 	public static void startReconnect(Point point) {
-		if (CTPMod.MC.isInSingleplayer()) return;
+        Minecraft mc = CTPMod.MC;
+
+		if (mc.isLocalServer()) {
+            if(mc.player != null) mc.player.sendSystemMessage(Component.literal("§8[§6CatTeleport§8]§r Teleporting is disabled in SinglePlayer."));
+            return;
+        }
 
 		if (isAutoReconnectPresent) AutoReconnect.cancelAutoReconnect();
 
 		Screen newScr = new DisconnectedScreen(
-				new MultiplayerScreen(new TitleScreen()),
-				Text.of("§8[§6CatTeleport§8]"),
-				Text.of("startReconnect"));
+				new JoinMultiplayerScreen(new TitleScreen()),
+				Component.nullToEmpty("§8[§6CatTeleport§8]"),
+				Component.nullToEmpty("startReconnect"));
 
-		Objects.requireNonNull(CTPMod.MC.getNetworkHandler()).getConnection().disconnect(Text.of("reconnecting"));
+		Objects.requireNonNull(mc.getConnection()).getConnection().disconnect(Component.nullToEmpty("reconnecting"));
 		MC.disconnect(newScr, false);
 
 		reconnectThread = new ReconnectThread(point.getStartPeriod(), point.getEndPeriod());
@@ -81,14 +86,14 @@ public class CTPMod implements ClientModInitializer {
 			reconnectThread.join();
 		} catch (InterruptedException | NullPointerException ignored) {}
 		LOGGER.info("Reconnecting cancelled.");
-		MC.setScreen(new DisconnectedScreen(new MultiplayerScreen(new TitleScreen()), Text.of("§8[§6CatTeleport§8]"), Text.of("cancelReconnect")));
+		MC.setScreen(new DisconnectedScreen(new JoinMultiplayerScreen(new TitleScreen()), Component.nullToEmpty("§8[§6CatTeleport§8]"), Component.nullToEmpty("cancelReconnect")));
 	}
 
-	public void connectToServer(ServerInfo targetInfo) {
-		ConnectScreen.connect(new MultiplayerScreen(new TitleScreen()), MC, ServerAddress.parse(targetInfo.address), targetInfo, false, null);
+	public void connectToServer(ServerData targetInfo) {
+		ConnectScreen.startConnecting(new JoinMultiplayerScreen(new TitleScreen()), MC, ServerAddress.parseString(targetInfo.ip), targetInfo, false, null);
 	}
 
-	public static Text generateFeedback(String message, Object... args) {
+	public static Component generateFeedback(String message, Object... args) {
 		//Send message in chat that only user can see
 		//§0  black			§8	dark_gray		§g	minecoin_gold
 		//§1  dark_blue		§9	blue			§f	white
@@ -99,7 +104,7 @@ public class CTPMod implements ClientModInitializer {
 		for (int i = 0; i < args.length; i++) {
 			message = message.replace("{" + i + "}", args[i].toString());
 		}
-		return Text.of("§8[§6CatTeleport§8]§2 " + message);
+		return Component.nullToEmpty("§8[§6CatTeleport§8]§2 " + message);
 	}
 
 	public static Point getPoint(String name) {

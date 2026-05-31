@@ -18,7 +18,7 @@ public class TpCommand {
     }
 
     public static int run(CommandContext<FabricClientCommandSource> ctx) {
-        if (CTPMod.MC.isInSingleplayer()) {
+        if (CTPMod.MC.isLocalServer()) {
             ctx.getSource().sendFeedback(CTPMod.generateFeedback(
                     "§cCTPMod doesn't work in §4SinglePlayer§c. You can use §dNether Portals§c instead of rejoining."
             ));

@@ -1,13 +1,13 @@
 package net.just_s.ctpmod.config;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import me.shedaniel.clothconfig2.api.Modifier;
 import me.shedaniel.clothconfig2.api.ModifierKeyCode;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 @Getter
 @Setter
@@ -18,31 +18,31 @@ public class KeyBind {
     private short modifier;
 
     public static KeyBind of(ModifierKeyCode modifierKeyCode) {
-        return new KeyBind(modifierKeyCode.getKeyCode().getTranslationKey(), modifierKeyCode.getModifier().getValue());
+        return new KeyBind(modifierKeyCode.getKeyCode().getName(), modifierKeyCode.getModifier().getValue());
     }
 
     public ModifierKeyCode toModifierKeyCode() {
-        return ModifierKeyCode.of(InputUtil.fromTranslationKey(translationKey), Modifier.of(modifier));
+        return ModifierKeyCode.of(InputConstants.getKey(translationKey), Modifier.of(modifier));
     }
 
     public String toString() {
         return this.getLocalizedName().getString();
     }
 
-    public Text getLocalizedName() {
-        Text base = InputUtil.fromTranslationKey(translationKey).getLocalizedText();
+    public Component getLocalizedName() {
+        Component base = InputConstants.getKey(translationKey).getDisplayName();
         Modifier modifier = Modifier.of(this.modifier);
 
         if (modifier.hasShift()) {
-            base = Text.translatable("modifier.cloth-config.shift", base);
+            base = Component.translatable("modifier.cloth-config.shift", base);
         }
 
         if (modifier.hasControl()) {
-            base = Text.translatable("modifier.cloth-config.ctrl", base);
+            base = Component.translatable("modifier.cloth-config.ctrl", base);
         }
 
         if (modifier.hasAlt()) {
-            base = Text.translatable("modifier.cloth-config.alt", base);
+            base = Component.translatable("modifier.cloth-config.alt", base);
         }
 
         return base;

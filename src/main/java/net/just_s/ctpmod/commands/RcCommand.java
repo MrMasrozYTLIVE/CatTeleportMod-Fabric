@@ -8,7 +8,7 @@ import net.just_s.ctpmod.config.Point;
 public class RcCommand {
     public static int run(CommandContext<FabricClientCommandSource> ctx) {
         int seconds = ctx.getArgument("seconds", int.class);
-        if (CTPMod.MC.isInSingleplayer()) {
+        if (CTPMod.MC.isLocalServer()) {
             ctx.getSource().sendFeedback(CTPMod.generateFeedback(
                     "§cCTPMod doesn't work in §4SinglePlayer§c. You can use §dNether Portals§c instead of rejoining."
             ));
