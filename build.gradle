@@ -1,15 +1,14 @@
 import com.hypherionmc.modpublisher.properties.ModLoader
 
 plugins {
-	id("fabric-loom") version("1.11-SNAPSHOT")
-	id("maven-publish")
-	id("com.hypherionmc.modutils.modpublisher") version("2.1.7+snapshot.3")
+	id("net.fabricmc.fabric-loom") version("1.16-SNAPSHOT")
+	id("com.hypherionmc.modutils.modpublisher") version("2.1.8+snapshot.4")
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
-
-archivesBaseName = project.archives_base_name
+//sourceCompatibility = JavaVersion.VERSION_21
+//targetCompatibility = JavaVersion.VERSION_21
+//
+//archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
@@ -19,6 +18,7 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+    maven { url "https://maven.shedaniel.me/" }
 	maven { url "https://maven.shedaniel.me/" }
 	maven { url "https://maven.terraformersmc.com/releases" }
 	maven { url "https://maven.fabricmc.net/" }
@@ -40,8 +40,8 @@ dependencies {
 	implementation "javax.annotation:javax.annotation-api:1.3.2"
 	implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
-	compileOnly 'org.projectlombok:lombok:1.18.34'
-	annotationProcessor 'org.projectlombok:lombok:1.18.34'
+	compileOnly 'org.projectlombok:lombok:1.18.42'
+	annotationProcessor 'org.projectlombok:lombok:1.18.42'
 
 	modImplementation "maven.modrinth:autoreconnectrf:${autoreconnectrf_version}"
 }
@@ -68,7 +68,7 @@ tasks.withType(JavaCompile).configureEach {
 
 jar {
 	from(rootProject.file("LICENSE")) {
-		rename { "${it}_${project.archivesBaseName}" }
+		rename { "${it}_${project.archives_base_name}" }
 	}
 	manifest {
 		attributes([
@@ -92,13 +92,6 @@ publisher {
 		curseforge System.getenv().CURSEFORGE_TOKEN
 		github System.getenv().GITHUB_TOKEN
 	}
-
-    proxy {
-        httpHost("localhost")
-        httpPort(2080)
-        httpsHost("localhost")
-        httpsPort(2080)
-    }
 
 	setCurseID(curseforge_id)
 	setModrinthID(modrinth_id)
